@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>游聚排行榜-续写统计</title>
+    <link href="{% static 'images/logo.png' %}" rel="icon" type="image/x-ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.js"></script>
+</head>
+<body>
+<div class="ui inverted vertical header fixed segment">
+    <div class="ui center aligned container">
+        以下数据来自于：<a href="http://ranking.gotvg.com/" target="_blank" style="color: orange" data-tooltip="点击跳转到游聚游戏平台排行榜"
+                   data-position="bottom center">游聚游戏平台</a>，
+        统计人：<a style="color: orange" data-tooltip="续写QQ：79034531" data-position="bottom center">续写</a>
+    </div>
+</div>
+<div class="ui container" style="margin-top: 20px;">
+    <div class="ui pointing menu" id="category">
+        <a href="?category=speed" class="{% ifequal category 'speed' %}active{% endifequal %} item">
+            速通
+        </a>
+        <a href="?category=score" class="{% ifequal category 'score' %}active{% endifequal %} item">
+            贪分
+        </a>
+        <a href="?category=challenge" class="{% ifequal category 'challenge' %}active{% endifequal %} item">
+            挑战
+        </a>
+        <div class="right menu">
+            <div class="item">
+                <div class="ui transparent icon input">
+                    <a href="{% url 'rank:boss' %}">游聚称号</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui segment">
+        <div class="ui grid">
+            <div class="four wide column">
+                <div class="ui vertical fluid tabular menu" id="menu">
+                    <a href="?category={{ category }}&game_name=1" class="active item">
+                        按游戏名排序
+                    </a>
+                    <a href="?category={{ category }}&rank=1" class="item">
+                        按名次排序
+                    </a>
+                    <a href="?category={{ category }}&player=1" class="item">
+                        按玩家名排序
+                    </a>
+                    <a href="?category={{ category }}&hits=1" class="item">
+                        按点击量排序
+                    </a>
+                </div>
+            </div>
+            <div class="twelve wide stretched column">
+                <div class="ui segment">
+                    <table class="ui celled table striped">
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>游戏名</th>
+                            <th>名次</th>
+                            <th>玩家</th>
+                            <th>时长</th>
+                            <th>日期</th>
+                            <th>热度</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for rank in ranks %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td class="selectable">
+                                    <a href="" style="color: blue;">{{ rank.game_name }}</a>
+                                </td>
+                                <td>{{ rank.rank }}</td>
+                                <td>{{ rank.player }}</td>
+                                <td>{{ rank.timestamp }}</td>
+                                <td>{{ rank.video_date }}</td>
+                                <td>{{ rank.hits }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        let url = window.location.search;
+        let category = $('#menu a');
+        category.each(function (index, element) {
+            let path = $(this).attr('href');
+            if (path === url) {
+                $(this).addClass('active').siblings().removeClass('active');
+            }
+        });
+    });
+</script>
+</body>
+</html>

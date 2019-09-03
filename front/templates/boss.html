@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>游聚排行榜-续写统计</title>
+    <link href="{% static 'images/logo.png' %}" rel="icon" type="image/x-ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.js"></script>
+</head>
+<body>
+<div class="ui inverted vertical header fixed segment">
+    <div class="ui center aligned container">
+        <a href="{% url 'rank:rank' %}" style="float: left; color: orange;">首页</a>
+        以下数据来自于：<a href="http://ranking.gotvg.com/" target="_blank" style="color: orange" data-tooltip="点击跳转到游聚游戏平台排行榜"
+                   data-position="bottom center">游聚游戏平台</a>，
+        统计人：<a style="color: orange" data-tooltip="续写QQ：79034531" data-position="bottom center">续写</a>
+    </div>
+</div>
+<div class="ui container" style="margin: 20px 0;">
+    <div class="ui segment" style="height: 200px;" id="loader">
+        <div class="ui active inverted dimmer">
+            <div class="ui small text loader">正在加载排行榜数据，请稍候……</div>
+        </div>
+        <p></p>
+    </div>
+    <table class="ui celled table striped" style="display: none;">
+        <thead>
+        <tr>
+            <th>序号</th>
+            <th>玩家</th>
+            <th>游戏</th>
+            <th>时长</th>
+            <th>日期</th>
+            <th>热度</th>
+        </tr>
+        </thead>
+        <tbody id="ranks">
+        {% for rank in ranks %}
+            <tr>
+                <td></td>
+                <td>{{ rank.player }}</td>
+                <td class="game_name">
+                    {{ rank.game_name }}{% if rank.category == 'speed' %}速通No.1{% elif rank.category == 'score' %}贪分王{% else %}挑战王{% endif %}
+                </td>
+                <td>{{ rank.timestamp }}</td>
+                <td>{{ rank.video_date }}</td>
+                <td>{{ rank.hits }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+    window.onload = function () {
+        $('#ranks tr').each(function (index, element) {
+            let reg = '速通No.1';
+            let preventTitle = $(this).prev().children().eq(2).text();
+            let preventScore = $(this).prev().children().eq(3).text();
+            let currentTitle = $(this).children().eq(2).text();
+            let currentScore = $(this).children().eq(3).text();
+            let nextTitle = $(this).next().children().eq(2).text();
+            let nextScore = $(this).next().children().eq(3).text();
+            if (currentTitle.match(reg)) {
+                if (nextTitle === currentTitle && nextScore <= currentScore) {
+                    $(this).remove();
+                }
+                if (preventTitle === currentTitle && preventScore <= currentScore) {
+                    $(this).remove();
+                }
+            } else {
+                if (nextTitle === currentTitle && nextScore >= currentScore) {
+                    $(this).remove();
+                }
+                if (preventTitle === currentTitle && preventScore >= currentScore) {
+                    $(this).remove();
+                }
+            }
+        });
+        $('#ranks tr').each(function (index, element) {
+            $(this).children().eq(0).text(index + 1);
+        });
+        $('#loader').css('display', 'none');
+        $('#ranks').parent().css('display', '');
+    };
+</script>
+</body>
+</html>
